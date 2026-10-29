@@ -1,0 +1,39 @@
+name: Parallel CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test ${{ matrix.configuration }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+          - Debug
+          - Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Build application
+        run: dotnet build PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }} --no-restore
+
+      - name: Run tests
+        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }} --no-build
