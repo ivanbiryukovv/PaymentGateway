@@ -31,19 +31,19 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+        run: dotnet restore PaymentGateway.slnx
 
       - name: Build application
-        run: dotnet build PaymentGateway/PaymentGateway.csproj --configuration ${{ matrix.configuration }} --no-restore
+        run: dotnet build PaymentGateway.slnx --configuration ${{ matrix.configuration }} --no-restore
 
       - name: Run unit tests
-        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }}
+        run: dotnet test PaymentGateway.slnx --configuration ${{ matrix.configuration }} --no-build
 
       - name: Archive build output
         shell: bash
         run: |
           mkdir -p artifacts
-          cd PaymentGateway/bin/${{ matrix.configuration }}/net8.0
+          cd PaymentGateway/PaymentGateway/bin/${{ matrix.configuration }}/net8.0
           zip -r "$GITHUB_WORKSPACE/artifacts/PaymentGateway-${{ matrix.configuration }}.zip" .
 
       - name: Upload build artifact
