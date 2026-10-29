@@ -30,10 +30,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+        run: dotnet restore PaymentGateway.slnx
 
-      - name: Build application
-        run: dotnet build PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }} --no-restore
+      - name: Build solution
+        run: dotnet build PaymentGateway.slnx --configuration ${{ matrix.configuration }} --no-restore
 
       - name: Run tests
-        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }} --no-build
+        run: dotnet test PaymentGateway.slnx --configuration ${{ matrix.configuration }} --no-build
