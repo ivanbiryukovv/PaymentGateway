@@ -23,10 +23,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+        run: dotnet restore PaymentGateway.slnx
 
-      - name: Build application
-        run: dotnet build PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore
+      - name: Build solution
+        run: dotnet build PaymentGateway.slnx --configuration Release --no-restore
 
   test:
     name: Run tests
@@ -43,10 +43,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+        run: dotnet restore PaymentGateway.slnx
 
-      - name: Run unit tests
-        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore
+      - name: Run tests
+        run: dotnet test PaymentGateway.slnx --configuration Release --no-restore
 
   analyze:
     name: Analyze code
@@ -63,7 +63,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+        run: dotnet restore PaymentGateway.slnx
 
       - name: Analyze code
-        run: dotnet format PaymentGatewayTests/PaymentGatewayTests.csproj --verify-no-changes --no-restore
+        run: dotnet format PaymentGateway.slnx --verify-no-changes --no-restore
