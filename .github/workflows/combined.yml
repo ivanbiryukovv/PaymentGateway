@@ -1,0 +1,69 @@
+name: Combined CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Build application
+        run: dotnet build PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore
+
+  test:
+    name: Run tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Run unit tests
+        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore
+
+  analyze:
+    name: Analyze code
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Analyze code
+        run: dotnet format PaymentGatewayTests/PaymentGatewayTests.csproj --verify-no-changes --no-restore
