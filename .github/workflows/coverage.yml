@@ -1,0 +1,58 @@
+name: Code Coverage
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Build application
+        run: dotnet build PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore
+
+  test:
+    name: Test and collect coverage
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Run tests with coverage
+        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration Release --no-restore --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: error
+          retention-days: 14
