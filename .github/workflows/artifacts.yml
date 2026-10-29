@@ -1,0 +1,55 @@
+name: Build and Publish Artifacts
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.configuration }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+          - Debug
+          - Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore PaymentGatewayTests/PaymentGatewayTests.csproj
+
+      - name: Build application
+        run: dotnet build PaymentGateway/PaymentGateway.csproj --configuration ${{ matrix.configuration }} --no-restore
+
+      - name: Run unit tests
+        run: dotnet test PaymentGatewayTests/PaymentGatewayTests.csproj --configuration ${{ matrix.configuration }}
+
+      - name: Archive build output
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cd PaymentGateway/bin/${{ matrix.configuration }}/net8.0
+          zip -r "$GITHUB_WORKSPACE/artifacts/PaymentGateway-${{ matrix.configuration }}.zip" .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PaymentGateway-${{ matrix.configuration }}
+          path: artifacts/PaymentGateway-${{ matrix.configuration }}.zip
+          if-no-files-found: error
+          retention-days: 14
